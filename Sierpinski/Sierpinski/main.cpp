@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  KochCurve
+//  Sierpinski
 //
 //  Created by naohiro nomura on 2016/07/17.
 //  Copyright © 2016年 naohiro nomura. All rights reserved.
@@ -16,54 +16,39 @@ namespace Data
 }
 
 
-struct Vector2 {
-    Vector2() {
-        x = 0;
-        y = 0;
-    }
-    Vector2(GLfloat xx, GLfloat yy) {
-        x = xx;
-        y = yy;
-    }
-    GLfloat x;
-    GLfloat y;
-};
-
-
-GLfloat Length (Vector2 v)
+//================================================================================
+//  三角形作成
+//================================================================================
+void Triangle (GLfloat *t, GLfloat *r, GLfloat *l)
 {
-    return sqrtf(v.x * v.x + v.y * v.y);
+    glVertex2f(t[0], t[1]);
+    glVertex2f(r[0], r[1]);
+    
+    glVertex2f(r[0], r[1]);
+    glVertex2f(l[0], l[1]);
+    
+    glVertex2f(l[0], l[1]);
+    glVertex2f(t[0], t[1]);
 }
 
 
-Vector2 Normal (Vector2 v)
+//================================================================================
+//  シェルピンスキー
+//================================================================================
+void Sierpinski (GLfloat x, GLfloat y, GLfloat d)
 {
-    GLfloat leng = Length(v);
-    return Vector2(v.x / leng, v.y / leng);
-}
-
-
-void KochCurve (GLfloat bx, GLfloat by, GLfloat ex, GLfloat ey, GLint num = 0)
-{
-    glVertex2f(bx, by);
-    glVertex2f(ex, ey);
     
+    GLfloat t[] = { x, y + d };
+    GLfloat r[] = { x + d, y + -d / 2 };
+    GLfloat l[] = { x + -d, y + -d / 2 };
     
-    Vector2 be(bx - ex, by - ey);
+    Triangle(t, r, l);
     
-    Vector2 unit = Normal(be);
-    
-    GLfloat spf2 = Length(be) / 2;
-    GLfloat spf3 = Length(be) / 3;
-    
-    Vector2 spv2(unit.x * spf2, unit.y * spf2);
-    Vector2 spv3(unit.x * spf3, unit.y * spf3);
-    
-    if (num <= 0) {
-        
-    } else {
-        KochCurve(bx + spv3.x, by + spv3.y, bx + spv2.x, by + spv2.y, num - 1);
-        KochCurve(bx + spv3.x * 2, by + spv3.y * 2, bx + spv2.x, by + spv2.y, num - 1);
+    if(d > 0.05f){
+        GLfloat size = 0.475f;
+        Sierpinski(x/2 + t[0] / 2, y/2 + t[1] / 2, d * size);
+        Sierpinski(x/2 + r[0] / 2, y/2 + r[1] / 2, d * size);
+        Sierpinski(x/2 + l[0] / 2, y/2 + l[1] / 2, d * size);
     }
 }
 
@@ -75,25 +60,15 @@ void display ()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     
-    glColor3f(1, 1, 1);
-    
-    GLfloat flo = 1.5f;
-    GLfloat size = 1 * 0.5f;
+    glColor3f(0, 1, 1);
     
     //  ライン描画
     glBegin(GL_LINES);
     
-    //  右辺
-    KochCurve(0, size, size, -size/flo, 4);
-    
-    //  左辺
-    KochCurve(0, size, -size, -size/flo, 4);
-    
-    //  底辺
-    KochCurve(size, -size/flo, -size, -size/flo, 4);
+    Sierpinski(0, -0.2f, 1);
     
     glEnd();
-
+    
     
     //  ダブルバッファ
     glutSwapBuffers();
@@ -127,7 +102,8 @@ int main(int argc, char * argv[])
     glutTimerFunc(0, timer, Data::msecs);
     
     
-    glClearColor(0, 0, 0, 1);
+    GLfloat gray = 0.19607843f;
+    glClearColor(gray, gray, gray, 1);
     
     
     glutMainLoop();
