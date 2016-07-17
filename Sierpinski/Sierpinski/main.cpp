@@ -44,11 +44,10 @@ void Sierpinski (GLfloat x, GLfloat y, GLfloat d)
     
     Triangle(t, r, l);
     
-    if(d > 0.05f){
-        GLfloat size = 0.475f;
-        Sierpinski(x/2 + t[0] / 2, y/2 + t[1] / 2, d * size);
-        Sierpinski(x/2 + r[0] / 2, y/2 + r[1] / 2, d * size);
-        Sierpinski(x/2 + l[0] / 2, y/2 + l[1] / 2, d * size);
+    if(d > 0.01f){
+        Sierpinski(x/2 + t[0] / 2, y/2 + t[1] / 2, d / 2);
+        Sierpinski(x/2 + r[0] / 2, y/2 + r[1] / 2, d / 2);
+        Sierpinski(x/2 + l[0] / 2, y/2 + l[1] / 2, d / 2);
     }
 }
 
@@ -92,8 +91,8 @@ int main(int argc, char * argv[])
 {
     
     glutInit(&argc, argv);
-    glutInitWindowSize(400, 400);
-    glutCreateWindow("Texture Test");
+    glutInitWindowSize(800, 800);
+    glutCreateWindow("Sierpinski");
     
     glutInitDisplayMode(GL_RGBA | GLUT_DOUBLE);
     
